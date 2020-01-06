@@ -7,7 +7,7 @@ moaline({dom: document.querySelector('body')});
 const moaline = function ({
     dom, // 挂载在哪个dom上
     span = 50, // 单个元素的大小
-    scale = 1000, // 与噪声晶格的映射比，值越大动画越混沌无序
+    scale = 1000, // 与噪声晶格的映射比，值越小动画越混沌无序
     speed = 0.002, // 单个元素旋转速度
     duration = 1000, // 颜色改变时间
     colors = [{
