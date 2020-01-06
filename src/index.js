@@ -27,16 +27,19 @@ const wave = function ({
     ], // 颜色组，点击dom时颜色将在这个数组间切换
 }) {
     dom.style.position = 'relative';
+    dom.style.zIndex = 0;
     dom.style.overflow = 'hidden';
+
     const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
     canvas.style.position = 'absolute';
     canvas.style.zIndex = '-999';
+    canvas.style.top = '-' + parseInt(getComputedStyle(dom)['height']) * 0.1 + 'px';
+    canvas.style.left = '-' + parseInt(getComputedStyle(dom)['width']) * 0.1 + 'px';
     canvas.height = parseInt(getComputedStyle(dom)['height']) * 1.2;
     canvas.width = parseInt(getComputedStyle(dom)['width']) * 1.2;
-    canvas.style.top = parseInt(getComputedStyle(dom)['width']) * 0.1;
-    canvas.style.left = parseInt(getComputedStyle(dom)['height']) * 0.1;
+
     dom.appendChild(canvas);
-    const context = canvas.getContext('2d');
 
     let r = span / 2;
     let seed = 0;
@@ -67,10 +70,9 @@ const wave = function ({
     }
 
     let points = [];
-
     function initPoints() {
         for (let y = 0; y < canvas.height; y += span) {
-            for (let x = 0; x < canvas.width; x += span) {
+            for (let x = 0; x < canvas.width; x += span) { // 这里可能造成绘制的条形超过canvas边界，x < canvas.height即使在canvas的倒数第一行也成立，也会继续向下
                 points.push(new Point({
                     cx: x + r,
                     cy: y + r,
@@ -84,8 +86,9 @@ const wave = function ({
         y: 0
     };
     function draw() {
-        context.translate(p.x, p.y);
         context.clearRect(0, 0, canvas.width, canvas.height);
+        context.translate(p.x, p.y);
+        [p.x, p.y] = [0, 0];
         context.beginPath();
 
         for (let i of points) {
@@ -93,35 +96,45 @@ const wave = function ({
         }
     }
 
+    let id;
     function animate() {
         draw();
         seed += speed;
 
-        requestAnimationFrame(animate);
+        id = requestAnimationFrame(animate);
     }
 
     initPoints();
     animate();
 
-    dom.addEventListener('mousemove', (e) => {
+    canvas.addEventListener('mousemove', (e) => {
         p.x = e.movementX / 50;
         p.y = e.movementY / 50;
     });
 
-    dom.addEventListener('mouseleave', () => {
+    canvas.addEventListener('mouseleave', () => {
         [p.x, p.y] = [0, 0];
     })
 
     window.addEventListener('resize', () => {
+        canvas.height = parseInt(getComputedStyle(dom)['height']) * 1.2;
+        canvas.width = parseInt(getComputedStyle(dom)['width']) * 1.2;
+        canvas.style.top = '-' + parseInt(getComputedStyle(dom)['height']) * 0.1 + 'px';
+        canvas.style.left = '-' + parseInt(getComputedStyle(dom)['width']) * 0.1 + 'px';
         initPoints();
-        canvas.height = parseInt(getComputedStyle(dom)['height']);
-        canvas.width = parseInt(getComputedStyle(dom)['width']);
     })
 
-    dom.addEventListener("click", () => {
+    canvas.addEventListener("click", () => {
         let target = copy(colors[(++ci) % colors.length]);
         move(color, target, duration);
     });
+
+    return {
+        canvas,
+        stop() {
+            cancelAnimationFrame(id);
+        }
+    };
 }
 
 export {wave};

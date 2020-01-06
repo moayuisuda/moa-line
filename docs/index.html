@@ -3,31 +3,44 @@
 
 <head>
     <style>
-        #canvas {
-            background: #000;
-        }
-
         body {
             margin: 0;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
         .main {
+            background: #000;
             height: 100vh;
+            color: white;
         }
     </style>
 </head>
 
 <body>
-    <div class="main"></div>
+    <div class="main">
+        span<input placeholder="span" type="text" class="span">
+        scale<input placeholder="scale" type="text" class="scale">
+        speed<input placeholder="speed" type="text" class="speed">
+        <button>Change</button>
+    </div>
 </body>
 <script src="./index.js"></script>
 <script>
-    console.log(moaline)
-    moaline.wave({dom: document.querySelector('body')});
-</script>
+    let dom = document.querySelector('.main');
+    let line = moaline.wave({dom, span: 60, scale: 200});
 
+    const spanEl = document.querySelector('.span');
+    const scaleEl = document.querySelector('.scale');
+    const speedEl = document.querySelector('.speed');
+
+    spanEl.value = 60;
+    scaleEl.value = 200;
+    speedEl.value = 0.002;
+
+    document.querySelector('button').addEventListener('click', () => {
+        console.log(line)
+        dom.removeChild(line.canvas);
+        line.stop();
+        line = moaline.wave({dom, span: Number(spanEl.value), scale: Number(scaleEl.value), speed: Number(speedEl.value)});
+    })
+</script>
 </html>
