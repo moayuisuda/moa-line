@@ -1,0 +1,14 @@
+{
+  "name": "moaline",
+  "version": "1.0.0",
+  "description": "Graceful line made by noise.",
+  "main": "dist/moaline.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "noise"
+  ],
+  "author": "moayuisuda",
+  "license": "ISC"
+}

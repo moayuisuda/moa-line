@@ -3,7 +3,7 @@ import {
 } from './perlin';
 import {move, copy} from './utils';
 
-const moaline = function ({
+const wave = function ({
     dom, // 挂载在哪个dom上
     span = 50, // 单个元素的大小
     scale = 1000, // 与噪声晶格的映射比，值越大动画越混沌无序
@@ -113,7 +113,6 @@ const moaline = function ({
     })
 
     window.addEventListener('resize', () => {
-        console.log('reseze');
         initPoints();
         canvas.height = parseInt(getComputedStyle(dom)['height']);
         canvas.width = parseInt(getComputedStyle(dom)['width']);
@@ -125,4 +124,4 @@ const moaline = function ({
     });
 }
 
-export default moaline;
+export {wave};

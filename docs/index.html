@@ -1,1 +1,33 @@
-<!DOCTYPE html><html> <head> <style>#canvas,body{background:#000}body{margin:0;display:flex;justify-content:center;align-items:center}.main{height:100vh}</style> </head> <body> <div class="main"></div> </body> <script src="./moaline.30eb86fc.js"></script> <script></script> </html>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        #canvas {
+            background: #000;
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main {
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main"></div>
+</body>
+<script src="./index.js"></script>
+<script>
+    console.log(moaline)
+    moaline.wave({dom: document.querySelector('body')});
+</script>
+
+</html>

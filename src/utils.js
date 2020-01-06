@@ -10,7 +10,6 @@ const copy = target => {
 let isChangeing = false;
 const move = (origin, target, duration) => {
   if(isChangeing) {
-    console.log('isChange');
     return;
   }
   isChangeing = true;
@@ -26,7 +25,6 @@ const move = (origin, target, duration) => {
         per = dt / duration, // 上一次到这一次的时间占总时间比
         pro = (t - from) / duration; // 当前进程
     if(pro >= 1) {
-      console.log('finish');
       isChangeing = false;
       return;
     }
