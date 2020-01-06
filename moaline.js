@@ -3,7 +3,7 @@ import {
 } from './perlin';
 import {move, copy} from './utils';
 
-let moaline = function ({
+const moaline = function ({
     dom, // 挂载在哪个dom上
     span = 50, // 单个元素的大小
     scale = 1000, // 与噪声晶格的映射比，值越大动画越混沌无序

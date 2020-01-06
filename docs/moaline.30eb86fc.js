@@ -8,4 +8,4 @@ var t=arguments[3];!function(t){var o=t.noise={};function r(t,o,r){this.x=t,this
 },{"./perlin":"deRS","./utils":"FO+Z"}],"Focm":[function(require,module,exports) {
 "use strict";var e=u(require("./moaline"));function u(e){return e&&e.__esModule?e:{default:e}}(0,e.default)({dom:document.querySelector("body")});
 },{"./moaline":"NuRk"}]},{},["Focm"], null)
-//# sourceMappingURL=/nb.51ada2a9.map
+//# sourceMappingURL=/moaline.30eb86fc.map
