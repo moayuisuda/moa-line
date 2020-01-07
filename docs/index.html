@@ -1,46 +1,99 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <style>
-        body {
-            margin: 0;
-        }
+      body {
+        font-family: monospace;
+        margin: 0;
+      }
 
-        .main {
-            background: #000;
-            height: 100vh;
-            color: white;
-        }
+      .main {
+        height: 100vh;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .params {
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .params_name {
+        display: inline-block;
+        width: 40px;
+      }
+
+      .params_change {
+        font-family: monospace;
+        margin-top: 20px;
+        border: none;
+        height: 50px;
+        width: 100px;
+      }
+
+      .params_change:hover {
+        cursor: pointer;
+        background-color: #838383;
+      }
+
+      .header {
+        text-align: center;
+        color: #5b7e92;
+      }
+
+      .container {
+        background-color: #000;
+        width: 80vw;
+        height: 50vh;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="main">
-        span<input placeholder="span" type="text" class="span">
-        scale<input placeholder="scale" type="text" class="scale">
-        speed<input placeholder="speed" type="text" class="speed">
-        <button>Change</button>
+      <div class="header"><h1>❀MOALINE</h1><span>Graceful line made by noise.</span></div>
+      <div class="params">
+        <div><div class="params_name">span</div><input placeholder="span" type="text" class="span" /></div>
+        <div><div class="params_name">scale</div><input
+          placeholder="scale"
+          type="text"
+          class="scale"
+        /></div>
+        <div><div class="params_name">speed</div><input placeholder="speed" type="text" class="speed" /></div>
+        <button class="params_change">Change</button>
+      </div>
+
+      <div class="container"></div>
     </div>
-</body>
-<script src="./index.js"></script>
-<script>
-    let dom = document.querySelector('.main');
-    let line = moaline.wave({dom, span: 60, scale: 200});
+  </body>
+  <script src="./index.js"></script>
+  <script>
+    let dom = document.querySelector(".container");
+    let line = moaline.wave({ dom, span: 30, scale: 500 });
 
-    const spanEl = document.querySelector('.span');
-    const scaleEl = document.querySelector('.scale');
-    const speedEl = document.querySelector('.speed');
+    const spanEl = document.querySelector(".span");
+    const scaleEl = document.querySelector(".scale");
+    const speedEl = document.querySelector(".speed");
 
-    spanEl.value = 60;
-    scaleEl.value = 200;
+    spanEl.value = 30;
+    scaleEl.value = 500;
     speedEl.value = 0.002;
 
-    document.querySelector('button').addEventListener('click', () => {
-        console.log(line)
-        dom.removeChild(line.canvas);
-        line.stop();
-        line = moaline.wave({dom, span: Number(spanEl.value), scale: Number(scaleEl.value), speed: Number(speedEl.value)});
-    })
-</script>
+    document.querySelector("button").addEventListener("click", () => {
+      console.log(line);
+      dom.removeChild(line.canvas);
+      line.stop();
+      line = moaline.wave({
+        dom,
+        span: Number(spanEl.value),
+        scale: Number(scaleEl.value),
+        speed: Number(speedEl.value)
+      });
+    });
+  </script>
 </html>

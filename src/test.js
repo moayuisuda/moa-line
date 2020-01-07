@@ -1,5 +1,5 @@
-import {wave} from './index'
+import { wave } from "./index";
 
 wave({
-    dom: document.querySelector('.main')
-  });
+  dom: document.querySelector(".main")
+});

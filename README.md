@@ -1,7 +1,12 @@
 ```js
-import moaline from 'moaline.js'
+// 模块化方式引用
+import {wave} from 'moaline.js'
+wave({dom: document.querySelector('body')});
 
-moaline({dom: document.querySelector('body')});
+
+// 全局变量方式使用
+<script src="moaline.js">
+moaline.wave({dom: document.querySelector('body')});
 
 /* 你可以只选择传递dom参数，下面是所有的参数↓
 const moaline = function ({
@@ -25,7 +30,7 @@ const moaline = function ({
             g: 192,
             b: 203
         }
-    ], // 颜色组，点击dom时颜色将在这个数组间切换
+    ], // 颜色组，点击canvas时颜色将在这个数组间切换
 })
 */
 ```
