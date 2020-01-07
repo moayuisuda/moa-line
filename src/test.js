@@ -1,5 +1,5 @@
-import { wave } from "./index";
+import { wave, wind, rain } from "./index";
 
-wave({
+wind({
   dom: document.querySelector(".main")
 });

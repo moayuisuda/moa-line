@@ -515,7 +515,7 @@ var move = function move(origin, target, duration) {
 };
 
 exports.move = move;
-},{}],"index.js":[function(require,module,exports) {
+},{}],"wave.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -551,18 +551,18 @@ var wave = function wave(_ref) {
     g: 192,
     b: 203
   }] : _ref$colors;
-  dom.style.position = 'relative';
+  dom.style.position = "relative";
   dom.style.zIndex = 0;
-  dom.style.overflow = 'hidden';
-  var canvas = document.createElement('canvas');
-  canvas.style.position = 'absolute';
-  canvas.style.zIndex = '-999';
-  canvas.style.top = '-' + parseInt(getComputedStyle(dom)['height']) * 0.1 + 'px';
-  canvas.style.left = '-' + parseInt(getComputedStyle(dom)['width']) * 0.1 + 'px';
-  canvas.height = parseInt(getComputedStyle(dom)['height']) * 1.2;
-  canvas.width = parseInt(getComputedStyle(dom)['width']) * 1.2;
+  dom.style.overflow = "hidden";
+  var canvas = document.createElement("canvas");
+  var context = canvas.getContext("2d");
+  canvas.style.position = "absolute";
+  canvas.style.zIndex = "-999";
+  canvas.style.top = "-" + parseInt(getComputedStyle(dom)["height"]) * 0.1 + "px";
+  canvas.style.left = "-" + parseInt(getComputedStyle(dom)["width"]) * 0.1 + "px";
+  canvas.height = parseInt(getComputedStyle(dom)["height"]) * 1.2;
+  canvas.width = parseInt(getComputedStyle(dom)["width"]) * 1.2;
   dom.appendChild(canvas);
-  var context = canvas.getContext('2d');
   var r = span / 2;
   var seed = 0;
   var ci = 0;
@@ -610,7 +610,6 @@ var wave = function wave(_ref) {
   };
 
   function draw() {
-    console.log(canvas.width, canvas.height);
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.translate(p.x, p.y);
     var _ref3 = [0, 0];
@@ -624,44 +623,376 @@ var wave = function wave(_ref) {
     }
   }
 
+  var id;
+
   function animate() {
     draw();
     seed += speed;
-    requestAnimationFrame(animate);
+    id = requestAnimationFrame(animate);
   }
 
   initPoints();
   animate();
-  dom.addEventListener('mousemove', function (e) {
+  canvas.addEventListener("mousemove", function (e) {
     p.x = e.movementX / 50;
     p.y = e.movementY / 50;
   });
-  dom.addEventListener('mouseleave', function () {
+  canvas.addEventListener("mouseleave", function () {
     var _ref4 = [0, 0];
     p.x = _ref4[0];
     p.y = _ref4[1];
   });
-  window.addEventListener('resize', function () {
-    canvas.height = parseInt(getComputedStyle(dom)['height']) * 1.2;
-    canvas.width = parseInt(getComputedStyle(dom)['width']) * 1.2;
-    canvas.style.top = '-' + parseInt(getComputedStyle(dom)['height']) * 0.1 + 'px';
-    canvas.style.left = '-' + parseInt(getComputedStyle(dom)['width']) * 0.1 + 'px';
+  window.addEventListener("resize", function () {
+    canvas.height = parseInt(getComputedStyle(dom)["height"]) * 1.2;
+    canvas.width = parseInt(getComputedStyle(dom)["width"]) * 1.2;
+    canvas.style.top = "-" + parseInt(getComputedStyle(dom)["height"]) * 0.1 + "px";
+    canvas.style.left = "-" + parseInt(getComputedStyle(dom)["width"]) * 0.1 + "px";
     initPoints();
   });
-  dom.addEventListener("click", function () {
+  canvas.addEventListener("click", function () {
     var target = (0, _utils.copy)(colors[++ci % colors.length]);
     (0, _utils.move)(color, target, duration);
   });
+  return {
+    canvas: canvas,
+    stop: function stop() {
+      cancelAnimationFrame(id);
+    }
+  };
 };
 
 exports.wave = wave;
-},{"./perlin":"perlin.js","./utils":"utils.js"}],"test.js":[function(require,module,exports) {
+},{"./perlin":"perlin.js","./utils":"utils.js"}],"wind.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.wind = void 0;
+
+var _perlin = require("./perlin");
+
+var _utils = require("./utils");
+
+var wind = function wind(_ref) {
+  var dom = _ref.dom,
+      _ref$span = _ref.span,
+      span = _ref$span === void 0 ? 50 : _ref$span,
+      _ref$scale = _ref.scale,
+      scale = _ref$scale === void 0 ? 200 : _ref$scale,
+      _ref$speed = _ref.speed,
+      speed = _ref$speed === void 0 ? 0.0001 : _ref$speed,
+      _ref$duration = _ref.duration,
+      duration = _ref$duration === void 0 ? 1000 : _ref$duration,
+      _ref$colors = _ref.colors,
+      colors = _ref$colors === void 0 ? [{
+    r: 212,
+    g: 192,
+    b: 255
+  }, {
+    r: 192,
+    g: 255,
+    b: 244
+  }, {
+    r: 255,
+    g: 192,
+    b: 203
+  }] : _ref$colors;
+  dom.style.position = "relative";
+  dom.style.zIndex = 0;
+  dom.style.overflow = "hidden";
+  var canvas = document.createElement("canvas");
+  var context = canvas.getContext("2d");
+  canvas.style.position = "absolute";
+  canvas.style.zIndex = "-999";
+  canvas.style.top = "-" + parseInt(getComputedStyle(dom)["height"]) * 0.1 + "px";
+  canvas.style.left = "-" + parseInt(getComputedStyle(dom)["width"]) * 0.1 + "px";
+  canvas.height = parseInt(getComputedStyle(dom)["height"]) * 1.2;
+  canvas.width = parseInt(getComputedStyle(dom)["width"]) * 1.2;
+  dom.appendChild(canvas);
+  var r = span / 2;
+  var seed = 0;
+  var ci = 0;
+  var color = (0, _utils.copy)(colors[ci]);
+
+  function Point(_ref2) {
+    var cx = _ref2.cx,
+        cy = _ref2.cy;
+    this.cx = cx;
+    this.cy = cy;
+  }
+
+  Point.prototype.line = function () {
+    context.beginPath();
+
+    var s = _perlin.noise.simplex3(this.cx / scale, this.cy / scale, seed);
+
+    var sa = Math.abs(s);
+    context.strokeStyle = "rgba(".concat(color.r, ", ").concat(color.g, ", ").concat(color.b, ", ").concat(sa, ")");
+    context.lineWidth = Math.abs(s) * 8;
+    var a = Math.PI * 2 * s;
+    var ap = Math.PI + a;
+    context.moveTo(this.cx * Math.cos(a), this.cx * Math.sin(a));
+    context.lineTo(this.cx * Math.sin(ap), this.cy * Math.cos(ap));
+    context.stroke();
+  };
+
+  var points = [];
+
+  function initPoints() {
+    for (var y = 0; y < canvas.height; y += span) {
+      for (var x = 0; x < canvas.width; x += span) {
+        // 这里可能造成绘制的条形超过canvas边界，x < canvas.height即使在canvas的倒数第一行也成立，也会继续向下
+        points.push(new Point({
+          cx: x + r,
+          cy: y + r
+        }));
+      }
+    }
+  }
+
+  var p = {
+    x: 0,
+    y: 0
+  };
+
+  function draw() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.translate(p.x, p.y);
+    var _ref3 = [0, 0];
+    p.x = _ref3[0];
+    p.y = _ref3[1];
+    context.beginPath();
+
+    for (var _i = 0; _i < points.length; _i++) {
+      var i = points[_i];
+      i.line();
+    }
+  }
+
+  var id;
+
+  function animate() {
+    draw();
+    seed += speed;
+    id = requestAnimationFrame(animate);
+  }
+
+  initPoints();
+  animate();
+  canvas.addEventListener("mousemove", function (e) {
+    p.x = e.movementX / 50;
+    p.y = e.movementY / 50;
+  });
+  canvas.addEventListener("mouseleave", function () {
+    var _ref4 = [0, 0];
+    p.x = _ref4[0];
+    p.y = _ref4[1];
+  });
+  window.addEventListener("resize", function () {
+    canvas.height = parseInt(getComputedStyle(dom)["height"]) * 1.2;
+    canvas.width = parseInt(getComputedStyle(dom)["width"]) * 1.2;
+    canvas.style.top = "-" + parseInt(getComputedStyle(dom)["height"]) * 0.1 + "px";
+    canvas.style.left = "-" + parseInt(getComputedStyle(dom)["width"]) * 0.1 + "px";
+    initPoints();
+  });
+  canvas.addEventListener("click", function () {
+    var target = (0, _utils.copy)(colors[++ci % colors.length]);
+    (0, _utils.move)(color, target, duration);
+  });
+  return {
+    canvas: canvas,
+    stop: function stop() {
+      cancelAnimationFrame(id);
+    }
+  };
+};
+
+exports.wind = wind;
+},{"./perlin":"perlin.js","./utils":"utils.js"}],"rain.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.rain = void 0;
+
+var _perlin = require("./perlin");
+
+var _utils = require("./utils");
+
+var rain = function rain(_ref) {
+  var dom = _ref.dom,
+      _ref$span = _ref.span,
+      span = _ref$span === void 0 ? 50 : _ref$span,
+      _ref$scale = _ref.scale,
+      scale = _ref$scale === void 0 ? 1000 : _ref$scale,
+      _ref$speed = _ref.speed,
+      speed = _ref$speed === void 0 ? 0.002 : _ref$speed,
+      _ref$duration = _ref.duration,
+      duration = _ref$duration === void 0 ? 1000 : _ref$duration,
+      _ref$colors = _ref.colors,
+      colors = _ref$colors === void 0 ? [{
+    r: 212,
+    g: 192,
+    b: 255
+  }, {
+    r: 192,
+    g: 255,
+    b: 244
+  }, {
+    r: 255,
+    g: 192,
+    b: 203
+  }] : _ref$colors;
+  dom.style.position = "relative";
+  dom.style.zIndex = 0;
+  dom.style.overflow = "hidden";
+  var canvas = document.createElement("canvas");
+  var context = canvas.getContext("2d");
+  canvas.style.position = "absolute";
+  canvas.style.zIndex = "-999";
+  canvas.style.top = "-" + parseInt(getComputedStyle(dom)["height"]) * 0.1 + "px";
+  canvas.style.left = "-" + parseInt(getComputedStyle(dom)["width"]) * 0.1 + "px";
+  canvas.height = parseInt(getComputedStyle(dom)["height"]) * 1.2;
+  canvas.width = parseInt(getComputedStyle(dom)["width"]) * 1.2;
+  dom.appendChild(canvas);
+  var r = span / 2;
+  var seed = 0;
+  var ci = 0;
+  var color = (0, _utils.copy)(colors[ci]);
+
+  function Point(_ref2) {
+    var cx = _ref2.cx,
+        cy = _ref2.cy;
+    this.cx = cx;
+    this.cy = cy;
+  }
+
+  Point.prototype.line = function () {
+    context.beginPath();
+
+    var s = _perlin.noise.simplex3(this.cx / scale, this.cy / scale, seed);
+
+    var sa = Math.abs(s);
+    context.strokeStyle = "rgba(".concat(color.r, ", ").concat(color.g, ", ").concat(color.b, ", ").concat(sa, ")");
+    context.lineWidth = Math.abs(s) * 8;
+    var a = Math.PI * 2 * s;
+    var ap = Math.PI + a;
+    context.moveTo(this.cx + Math.sin(a) * r, this.cy + Math.cos(a) * r);
+    context.lineTo(this.cx + Math.cos(ap) * r, this.cy + Math.sin(ap) * r);
+    context.stroke();
+  };
+
+  var points = [];
+
+  function initPoints() {
+    for (var y = 0; y < canvas.height; y += span) {
+      for (var x = 0; x < canvas.width; x += span) {
+        // 这里可能造成绘制的条形超过canvas边界，x < canvas.height即使在canvas的倒数第一行也成立，也会继续向下
+        points.push(new Point({
+          cx: x + r,
+          cy: y + r
+        }));
+      }
+    }
+  }
+
+  var p = {
+    x: 0,
+    y: 0
+  };
+
+  function draw() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.translate(p.x, p.y);
+    var _ref3 = [0, 0];
+    p.x = _ref3[0];
+    p.y = _ref3[1];
+    context.beginPath();
+
+    for (var _i = 0; _i < points.length; _i++) {
+      var i = points[_i];
+      i.line();
+    }
+  }
+
+  var id;
+
+  function animate() {
+    draw();
+    seed += speed;
+    id = requestAnimationFrame(animate);
+  }
+
+  initPoints();
+  animate();
+  canvas.addEventListener("mousemove", function (e) {
+    p.x = e.movementX / 50;
+    p.y = e.movementY / 50;
+  });
+  canvas.addEventListener("mouseleave", function () {
+    var _ref4 = [0, 0];
+    p.x = _ref4[0];
+    p.y = _ref4[1];
+  });
+  window.addEventListener("resize", function () {
+    canvas.height = parseInt(getComputedStyle(dom)["height"]) * 1.2;
+    canvas.width = parseInt(getComputedStyle(dom)["width"]) * 1.2;
+    canvas.style.top = "-" + parseInt(getComputedStyle(dom)["height"]) * 0.1 + "px";
+    canvas.style.left = "-" + parseInt(getComputedStyle(dom)["width"]) * 0.1 + "px";
+    initPoints();
+  });
+  canvas.addEventListener("click", function () {
+    var target = (0, _utils.copy)(colors[++ci % colors.length]);
+    (0, _utils.move)(color, target, duration);
+  });
+  return {
+    canvas: canvas,
+    stop: function stop() {
+      cancelAnimationFrame(id);
+    }
+  };
+};
+
+exports.rain = rain;
+},{"./perlin":"perlin.js","./utils":"utils.js"}],"index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "wave", {
+  enumerable: true,
+  get: function () {
+    return _wave.wave;
+  }
+});
+Object.defineProperty(exports, "wind", {
+  enumerable: true,
+  get: function () {
+    return _wind.wind;
+  }
+});
+Object.defineProperty(exports, "rain", {
+  enumerable: true,
+  get: function () {
+    return _rain.rain;
+  }
+});
+
+var _wave = require("./wave");
+
+var _wind = require("./wind");
+
+var _rain = require("./rain");
+},{"./wave":"wave.js","./wind":"wind.js","./rain":"rain.js"}],"test.js":[function(require,module,exports) {
 "use strict";
 
 var _index = require("./index");
 
-(0, _index.wave)({
-  dom: document.querySelector('.main')
+(0, _index.wind)({
+  dom: document.querySelector(".main")
 });
 },{"./index":"index.js"}],"../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -690,7 +1021,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64233" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52354" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

@@ -16,11 +16,20 @@
       }
 
       .params {
-        width: 300px;
+        width: 210px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+      }
+
+      .params input {
+        box-sizing: border-box;
+        width: 160px;
+      }
+
+      .params select {
+        width: 160px;
       }
 
       .params_name {
@@ -56,15 +65,31 @@
 
   <body>
     <div class="main">
-      <div class="header"><h1>❀MOALINE</h1><span>Graceful line made by noise.</span></div>
+      <div class="header">
+        <h1>❀MOALINE</h1>
+        <span>Graceful line made by noise.</span>
+      </div>
       <div class="params">
-        <div><div class="params_name">span</div><input placeholder="span" type="text" class="span" /></div>
-        <div><div class="params_name">scale</div><input
-          placeholder="scale"
-          type="text"
-          class="scale"
-        /></div>
-        <div><div class="params_name">speed</div><input placeholder="speed" type="text" class="speed" /></div>
+        <div>
+          <div class="params_name">type</div>
+          <select placeholder="span" type="text" class="type">
+            <option value="wave">wave</option>
+            <option value="wind">wind</option>
+            <option value="rain">rain</option>
+          </select>
+        </div>
+        <div>
+          <div class="params_name">span</div>
+          <input placeholder="span" type="text" class="span" />
+        </div>
+        <div>
+          <div class="params_name">scale</div>
+          <input placeholder="scale" type="text" class="scale" />
+        </div>
+        <div>
+          <div class="params_name">speed</div>
+          <input placeholder="speed" type="text" class="speed" />
+        </div>
         <button class="params_change">Change</button>
       </div>
 
@@ -79,16 +104,31 @@
     const spanEl = document.querySelector(".span");
     const scaleEl = document.querySelector(".scale");
     const speedEl = document.querySelector(".speed");
+    const typeEl = document.querySelector(".type");
+
+    typeEl.addEventListener("change", e => {
+      if (e.target.options[e.target.selectedIndex].value == "wind") {
+        spanEl.value = 50;
+        scaleEl.value = 200;
+        speedEl.value = 0.0001;
+      } else {
+        spanEl.value = 30;
+        scaleEl.value = 500;
+        speedEl.value = 0.002;
+      }
+    });
 
     spanEl.value = 30;
     scaleEl.value = 500;
     speedEl.value = 0.002;
+    typeEl.selectedIndex = 0;
 
     document.querySelector("button").addEventListener("click", () => {
       console.log(line);
       dom.removeChild(line.canvas);
       line.stop();
-      line = moaline.wave({
+      console.log(typeEl.options[typeEl.selectedIndex]);
+      line = moaline[typeEl.options[typeEl.selectedIndex].value]({
         dom,
         span: Number(spanEl.value),
         scale: Number(scaleEl.value),
