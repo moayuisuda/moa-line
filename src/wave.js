@@ -6,7 +6,8 @@ const wave = function({
   span = 50, // 单个元素的大小
   scale = 1000, // 与噪声晶格的映射比，值越大动画越混沌无序
   speed = 0.002, // 单个元素旋转速度
-  duration = 1000, // 颜色改变时间
+  duration = 1000, // 颜色改变时间,
+  zIndex = -999,
   colors = [
     {
       r: 212,
@@ -32,7 +33,7 @@ const wave = function({
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
   canvas.style.position = "absolute";
-  canvas.style.zIndex = "-999";
+  canvas.style.zIndex = zIndex;
   canvas.style.top =
     "-" + parseInt(getComputedStyle(dom)["height"]) * 0.1 + "px";
   canvas.style.left =
@@ -52,7 +53,7 @@ const wave = function({
     this.cy = cy;
   }
 
-  Point.prototype.line = function() {
+  Point.prototype.init = function() {
     context.beginPath();
     let s = noise.simplex3(this.cx / scale, this.cy / scale, seed);
     let sa = Math.abs(s);
@@ -90,10 +91,9 @@ const wave = function({
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.translate(p.x, p.y);
     [p.x, p.y] = [0, 0];
-    context.beginPath();
 
     for (let i of points) {
-      i.line();
+      i.init();
     }
   }
 
@@ -108,12 +108,12 @@ const wave = function({
   initPoints();
   animate();
 
-  canvas.addEventListener("mousemove", e => {
+  dom.addEventListener("mousemove", e => {
     p.x = e.movementX / 50;
     p.y = e.movementY / 50;
   });
 
-  canvas.addEventListener("mouseleave", () => {
+  dom.addEventListener("mouseleave", () => {
     [p.x, p.y] = [0, 0];
   });
 
@@ -127,7 +127,7 @@ const wave = function({
     initPoints();
   });
 
-  canvas.addEventListener("click", () => {
+  dom.addEventListener("click", () => {
     let target = copy(colors[++ci % colors.length]);
     move(color, target, duration);
   });

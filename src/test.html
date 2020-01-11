@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      .main {
+        /* background: #000; */
+        height: 100vh;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrapper"></div>
+    <div class="main"></div>
+  </body>
+  <script src="./perlin.js"></script>
+  <script>
+    const wave = function({
+      dom,
+      span = 50,
+      scale = 1000,
+      speed = 0.01,
+      zIndex = -999,
+      duration = 2000,
+      colors = [
+        [212, 192, 255],
+        [192, 255, 244],
+        [255, 192, 203]
+      ]
+    }) {
+      dom.style.position = "relative";
+      dom.style.zIndex = 0;
+      dom.style.overflow = "hidden";
+
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+
+      canvas.style.position = "absolute";
+      canvas.style.zIndex = zIndex;
+      canvas.height = parseInt(getComputedStyle(dom)["height"]);
+      canvas.width = parseInt(getComputedStyle(dom)["width"]);
+
+      dom.appendChild(canvas);
+
+      let r = span / 2;
+
+      function Point({ cx, cy }) {
+        this.cx = cx;
+        this.cy = cy;
+      }
+
+      Point.prototype.draw = function() {
+        context.beginPath();
+        let s = noise.simplex3(this.cx / scale, this.cy / scale, time);
+        let sa = Math.abs(s);
+        context.strokeStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${sa})`;
+        context.lineWidth = Math.abs(s) * 8;
+        let a = Math.PI * 2 * s;
+        let ap = Math.PI + a;
+
+        context.moveTo(this.cx + Math.sin(a) * r, this.cy + Math.cos(a) * r);
+        context.lineTo(this.cx + Math.cos(ap) * r, this.cy + Math.sin(ap) * r);
+
+        context.stroke();
+      };
+
+      let points = [];
+      function initPoints() {
+        for (let y = 0; y < canvas.height; y += span) {
+          for (let x = 0; x < canvas.width; x += span) {
+            points.push(
+              new Point({
+                cx: x + r,
+                cy: y + r
+              })
+            );
+          }
+        }
+      }
+
+      function draw() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let i of points) {
+          i.draw();
+        }
+      }
+
+      let id;
+      let time = 0;
+      function animate() {
+        draw();
+        time += speed;
+        id = requestAnimationFrame(animate);
+      }
+
+      let ci = 0;
+      const color = [...colors[ci]];
+      dom.addEventListener("click", () => {
+        let target = [...colors[++ci % colors.length]];
+        move(color, target, duration);
+      });
+
+      let isChangeing = false; // 标识颜色渐变是否已经在进行中
+      const move = (origin, target, duration) => {
+        if (isChangeing) {
+          return; // 如果已经在运行，则直接return
+        }
+        isChangeing = true;
+        let st, from;
+        st = from = performance.now();
+        let d = {}; // 源与目标之间每一项的距离
+        for (let i in origin) {
+          d[i] = target[i] - origin[i];
+        }
+
+        let frame = t => {
+          let dt = t - st, // 这次与上次间隔
+            per = dt / duration, // 上一次到这一次的时间占总时间比
+            pro = (t - from) / duration; // 当前进程
+          if (pro >= 1) {
+            isChangeing = false; // progression到1后就停止
+            return;
+          }
+
+          // 更新origin每一项的数据
+          for (let i in origin) {
+            origin[i] += d[i] * per; // 每一项加上时间比(per)*总距离(d[i])
+          }
+          st = t; // 起始时间变为当前时间
+
+          requestAnimationFrame(frame);
+        };
+        frame(st);
+      };
+
+      initPoints();
+      animate();
+
+      return {
+        canvas,
+        stop() {
+          cancelAnimationFrame(id);
+        }
+      };
+    };
+
+    wave({
+      dom: document.querySelector(".main"),
+      scale: 1000,
+      speed: 0.0006,
+      span: 200,
+      duration: 1000
+    });
+  </script>
+</html>

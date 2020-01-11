@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>body {
+        margin: 0;
+      }
+
+      .main {
+        background: #000;
+        height: 100vh;
+      }</style>
+  </head>
+
+  <body>
+    <div class="main"></div>
+  </body>
+  <script src="/perlin.69051c53.js"></script>
+  <script>var wave = function wave(_ref) {
+  var dom = _ref.dom,
+      _ref$span = _ref.span,
+      span = _ref$span === void 0 ? 50 : _ref$span,
+      _ref$scale = _ref.scale,
+      scale = _ref$scale === void 0 ? 1000 : _ref$scale,
+      _ref$speed = _ref.speed,
+      speed = _ref$speed === void 0 ? 0.01 : _ref$speed,
+      _ref$zIndex = _ref.zIndex,
+      zIndex = _ref$zIndex === void 0 ? -999 : _ref$zIndex,
+      _ref$colors = _ref.colors,
+      colors = _ref$colors === void 0 ? [{
+    r: 212,
+    g: 192,
+    b: 255
+  }, {
+    r: 192,
+    g: 255,
+    b: 244
+  }, {
+    r: 255,
+    g: 192,
+    b: 203
+  }] : _ref$colors;
+  dom.style.position = "relative";
+  dom.style.zIndex = 0;
+  dom.style.overflow = "hidden";
+  var canvas = document.createElement("canvas");
+  var context = canvas.getContext("2d");
+  canvas.style.position = "absolute";
+  canvas.style.zIndex = zIndex;
+  canvas.height = parseInt(getComputedStyle(dom)["height"]);
+  canvas.width = parseInt(getComputedStyle(dom)["width"]);
+  dom.appendChild(canvas);
+  var r = span / 2;
+
+  function Point(_ref2) {
+    var cx = _ref2.cx,
+        cy = _ref2.cy;
+    this.cx = cx;
+    this.cy = cy;
+  }
+
+  Point.prototype.draw = function () {
+    context.beginPath();
+    var s = noise.simplex3(this.cx / scale, this.cy / scale, time);
+    var sa = Math.abs(s);
+    context.strokeStyle = "rgba(255, 255, 255, ".concat(sa, ")");
+    context.lineWidth = Math.abs(s) * 8;
+    var a = Math.PI * 2 * s;
+    var ap = Math.PI + a;
+    context.moveTo(this.cx, this.cx);
+    context.lineTo(this.cx + Math.cos(ap) * r, this.cy + Math.sin(ap) * r);
+    context.stroke();
+  };
+
+  var points = [];
+
+  function initPoints() {
+    for (var y = 0; y < canvas.height; y += span) {
+      for (var x = 0; x < canvas.width; x += span) {
+        points.push(new Point({
+          cx: x + r,
+          cy: y + r
+        }));
+      }
+    }
+  }
+
+  function draw() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (var _i = 0; _i < points.length; _i++) {
+      var i = points[_i];
+      i.draw();
+    }
+  }
+
+  var id;
+  var time = 0;
+
+  function animate() {
+    draw();
+    time += speed;
+    id = requestAnimationFrame(animate);
+  }
+
+  initPoints();
+  animate();
+  return {
+    canvas: canvas,
+    stop: function stop() {
+      cancelAnimationFrame(id);
+    }
+  };
+};
+
+wave({
+  dom: document.querySelector(".main"),
+  scale: 5000,
+  speed: 0.002,
+  span: 100
+});</script>
+</html>

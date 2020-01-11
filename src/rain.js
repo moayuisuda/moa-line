@@ -90,7 +90,6 @@ const rain = function({
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.translate(p.x, p.y);
     [p.x, p.y] = [0, 0];
-    context.beginPath();
 
     for (let i of points) {
       i.line();
@@ -108,12 +107,12 @@ const rain = function({
   initPoints();
   animate();
 
-  canvas.addEventListener("mousemove", e => {
+  dom.addEventListener("mousemove", e => {
     p.x = e.movementX / 50;
     p.y = e.movementY / 50;
   });
 
-  canvas.addEventListener("mouseleave", () => {
+  dom.addEventListener("mouseleave", () => {
     [p.x, p.y] = [0, 0];
   });
 
@@ -127,7 +126,7 @@ const rain = function({
     initPoints();
   });
 
-  canvas.addEventListener("click", () => {
+  dom.addEventListener("click", () => {
     let target = copy(colors[++ci % colors.length]);
     move(color, target, duration);
   });
