@@ -107,16 +107,18 @@ const wind = function({
   initPoints();
   animate();
 
-  dom.addEventListener("mousemove", e => {
+  function moveE(e) {
     p.x = e.movementX / 50;
     p.y = e.movementY / 50;
-  });
+  }
+  dom.addEventListener("mousemove", moveE);
 
-  dom.addEventListener("mouseleave", () => {
+  function leaveE(e) {
     [p.x, p.y] = [0, 0];
-  });
+  }
+  dom.addEventListener("mouseleave", leaveE);
 
-  window.addEventListener("resize", () => {
+  function resizeE() {
     canvas.height = parseInt(getComputedStyle(dom)["height"]) * 1.2;
     canvas.width = parseInt(getComputedStyle(dom)["width"]) * 1.2;
     canvas.style.top =
@@ -124,17 +126,23 @@ const wind = function({
     canvas.style.left =
       "-" + parseInt(getComputedStyle(dom)["width"]) * 0.1 + "px";
     initPoints();
-  });
+  }
+  window.addEventListener("resize", resizeE);
 
-  dom.addEventListener("click", () => {
+  function clickE() {
     let target = copy(colors[++ci % colors.length]);
     move(color, target, duration);
-  });
+  }
+  dom.addEventListener("click", clickE);
 
   return {
     canvas,
     stop() {
       cancelAnimationFrame(id);
+      dom.removeEventListener("mousemove", moveE);
+      dom.removeEventListener("mouseleave", leaveE);
+      window.removeEventListener("resize", resizeE);
+      dom.removeEventListener("click", clickE);
     }
   };
 };

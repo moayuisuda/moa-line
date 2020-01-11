@@ -100,10 +100,11 @@
 
       let ci = 0;
       const color = [...colors[ci]];
-      dom.addEventListener("click", () => {
+      function clickE() {
         let target = [...colors[++ci % colors.length]];
         move(color, target, duration);
-      });
+      }
+      dom.addEventListener("click", clickE);
 
       let isChangeing = false; // 标识颜色渐变是否已经在进行中
       const move = (origin, target, duration) => {
@@ -145,6 +146,7 @@
         canvas,
         stop() {
           cancelAnimationFrame(id);
+          dom.removeEventListener('click', clickE);
         }
       };
     };

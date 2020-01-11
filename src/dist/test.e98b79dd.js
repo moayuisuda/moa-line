@@ -634,11 +634,11 @@ var wave = function wave(_ref) {
 
   initPoints();
   animate();
-  canvas.addEventListener("mousemove", function (e) {
+  dom.addEventListener("mousemove", function (e) {
     p.x = e.movementX / 50;
     p.y = e.movementY / 50;
   });
-  canvas.addEventListener("mouseleave", function () {
+  dom.addEventListener("mouseleave", function () {
     var _ref4 = [0, 0];
     p.x = _ref4[0];
     p.y = _ref4[1];
@@ -650,7 +650,7 @@ var wave = function wave(_ref) {
     canvas.style.left = "-" + parseInt(getComputedStyle(dom)["width"]) * 0.1 + "px";
     initPoints();
   });
-  canvas.addEventListener("click", function () {
+  dom.addEventListener("click", function () {
     var target = (0, _utils.copy)(colors[++ci % colors.length]);
     (0, _utils.move)(color, target, duration);
   });
@@ -780,11 +780,11 @@ var wind = function wind(_ref) {
 
   initPoints();
   animate();
-  canvas.addEventListener("mousemove", function (e) {
+  dom.addEventListener("mousemove", function (e) {
     p.x = e.movementX / 50;
     p.y = e.movementY / 50;
   });
-  canvas.addEventListener("mouseleave", function () {
+  dom.addEventListener("mouseleave", function () {
     var _ref4 = [0, 0];
     p.x = _ref4[0];
     p.y = _ref4[1];
@@ -796,7 +796,7 @@ var wind = function wind(_ref) {
     canvas.style.left = "-" + parseInt(getComputedStyle(dom)["width"]) * 0.1 + "px";
     initPoints();
   });
-  canvas.addEventListener("click", function () {
+  dom.addEventListener("click", function () {
     var target = (0, _utils.copy)(colors[++ci % colors.length]);
     (0, _utils.move)(color, target, duration);
   });
@@ -926,11 +926,11 @@ var rain = function rain(_ref) {
 
   initPoints();
   animate();
-  canvas.addEventListener("mousemove", function (e) {
+  dom.addEventListener("mousemove", function (e) {
     p.x = e.movementX / 50;
     p.y = e.movementY / 50;
   });
-  canvas.addEventListener("mouseleave", function () {
+  dom.addEventListener("mouseleave", function () {
     var _ref4 = [0, 0];
     p.x = _ref4[0];
     p.y = _ref4[1];
@@ -942,7 +942,7 @@ var rain = function rain(_ref) {
     canvas.style.left = "-" + parseInt(getComputedStyle(dom)["width"]) * 0.1 + "px";
     initPoints();
   });
-  canvas.addEventListener("click", function () {
+  dom.addEventListener("click", function () {
     var target = (0, _utils.copy)(colors[++ci % colors.length]);
     (0, _utils.move)(color, target, duration);
   });
@@ -1020,7 +1020,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49863" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60460" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
