@@ -106,38 +106,51 @@
       }
       dom.addEventListener("click", clickE);
 
-      let isChangeing = false; // 标识颜色渐变是否已经在进行中
-      const move = (origin, target, duration) => {
-        if (isChangeing) {
-          return; // 如果已经在运行，则直接return
+    const copy = target => {
+      let re = [];
+      for (let i in target) {
+        re[i] = target[i];
+      }
+    
+      return re;
+    };
+    
+    const move = (
+      origin,
+      target,
+      duration,
+      after, // 每次数值更改后的回调
+      fn = pro => {
+        return Math.sqrt(pro, 2);
+      } // 缓动函数
+    ) => {
+      if (fn(1) != 1) throw '[moaline-move] The fn must satisfy "fn (1) == 1"'; // 当参数为1时，对应的值也一定要为1
+    
+      let st, sp;
+      st = performance.now(); // 保存开始时间
+      sp = copy(origin); // 保存起点
+      let d = {}; // 源与目标之间每一项的距离
+      for (let i in origin) {
+        d[i] = target[i] - origin[i];
+      }
+    
+      let frame = t => {
+        let pro = (t - st) / duration; // 当前进程
+        if (pro >= 1) {
+          return;
         }
-        isChangeing = true;
-        let st, from;
-        st = from = performance.now();
-        let d = {}; // 源与目标之间每一项的距离
+    
         for (let i in origin) {
-          d[i] = target[i] - origin[i];
+          origin[i] = sp[i] + fn(pro) * d[i]; // fn(pro)得出当前时间对应的缓动函数的距离百分比，再乘以总距离
         }
-
-        let frame = t => {
-          let dt = t - st, // 这次与上次间隔
-            per = dt / duration, // 上一次到这一次的时间占总时间比
-            pro = (t - from) / duration; // 当前进程
-          if (pro >= 1) {
-            isChangeing = false; // progression到1后就停止
-            return;
-          }
-
-          // 更新origin每一项的数据
-          for (let i in origin) {
-            origin[i] += d[i] * per; // 每一项加上时间比(per)*总距离(d[i])
-          }
-          st = t; // 起始时间变为当前时间
-
-          requestAnimationFrame(frame);
-        };
-        frame(st);
+    
+        if(after) after(copy(origin), pro);
+        requestAnimationFrame(frame);
       };
+    
+      frame(st);
+    };
+
 
       initPoints();
       animate();
