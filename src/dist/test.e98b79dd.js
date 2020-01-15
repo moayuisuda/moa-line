@@ -474,16 +474,18 @@ var copy = function copy(target) {
 };
 
 exports.copy = copy;
-var isChangeing = false;
 
-var move = function move(origin, target, duration) {
-  if (isChangeing) {
-    return;
-  }
+var move = function move(origin, target, duration, after) {
+  var fn = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : function (pro) {
+    return Math.sqrt(pro, 2);
+  };
+  if (fn(1) != 1) throw '[moaline-move] The fn must satisfy "fn (1) == 1"'; // 当参数为1时，对应的值也一定要为1
 
-  isChangeing = true;
-  var st, from;
-  st = from = performance.now();
+  var st, sp;
+  st = performance.now(); // 保存开始时间
+
+  sp = copy(origin); // 保存起点
+
   var d = {}; // 源与目标之间每一项的距离
 
   for (var i in origin) {
@@ -491,23 +493,17 @@ var move = function move(origin, target, duration) {
   }
 
   var frame = function frame(t) {
-    var dt = t - st,
-        // 这次与上次间隔
-    per = dt / duration,
-        // 上一次到这一次的时间占总时间比
-    pro = (t - from) / duration; // 当前进程
+    var pro = (t - st) / duration; // 当前进程
 
     if (pro >= 1) {
-      isChangeing = false;
       return;
     }
 
     for (var _i in origin) {
-      origin[_i] += d[_i] * per; // 每一项加上时间比(per)*总距离(d[i])
+      origin[_i] = sp[_i] + fn(pro) * d[_i]; // fn(pro)得出当前时间对应的缓动函数的距离百分比，再乘以总距离
     }
 
-    st = t; // 起始时间变为当前时间
-
+    after(copy(origin), pro);
     requestAnimationFrame(frame);
   };
 
@@ -634,30 +630,46 @@ var wave = function wave(_ref) {
 
   initPoints();
   animate();
-  dom.addEventListener("mousemove", function (e) {
+
+  function moveE(e) {
     p.x = e.movementX / 50;
     p.y = e.movementY / 50;
-  });
-  dom.addEventListener("mouseleave", function () {
+  }
+
+  dom.addEventListener("mousemove", moveE);
+
+  function leaveE(e) {
     var _ref4 = [0, 0];
     p.x = _ref4[0];
     p.y = _ref4[1];
-  });
-  window.addEventListener("resize", function () {
+  }
+
+  dom.addEventListener("mouseleave", leaveE);
+
+  function resizeE() {
     canvas.height = parseInt(getComputedStyle(dom)["height"]) * 1.2;
     canvas.width = parseInt(getComputedStyle(dom)["width"]) * 1.2;
     canvas.style.top = "-" + parseInt(getComputedStyle(dom)["height"]) * 0.1 + "px";
     canvas.style.left = "-" + parseInt(getComputedStyle(dom)["width"]) * 0.1 + "px";
     initPoints();
-  });
-  dom.addEventListener("click", function () {
+  }
+
+  window.addEventListener("resize", resizeE);
+
+  function clickE() {
     var target = (0, _utils.copy)(colors[++ci % colors.length]);
     (0, _utils.move)(color, target, duration);
-  });
+  }
+
+  dom.addEventListener("click", clickE);
   return {
     canvas: canvas,
     stop: function stop() {
       cancelAnimationFrame(id);
+      dom.removeEventListener("mousemove", moveE);
+      dom.removeEventListener("mouseleave", leaveE);
+      window.removeEventListener("resize", resizeE);
+      dom.removeEventListener("click", clickE);
     }
   };
 };
@@ -780,30 +792,46 @@ var wind = function wind(_ref) {
 
   initPoints();
   animate();
-  dom.addEventListener("mousemove", function (e) {
+
+  function moveE(e) {
     p.x = e.movementX / 50;
     p.y = e.movementY / 50;
-  });
-  dom.addEventListener("mouseleave", function () {
+  }
+
+  dom.addEventListener("mousemove", moveE);
+
+  function leaveE(e) {
     var _ref4 = [0, 0];
     p.x = _ref4[0];
     p.y = _ref4[1];
-  });
-  window.addEventListener("resize", function () {
+  }
+
+  dom.addEventListener("mouseleave", leaveE);
+
+  function resizeE() {
     canvas.height = parseInt(getComputedStyle(dom)["height"]) * 1.2;
     canvas.width = parseInt(getComputedStyle(dom)["width"]) * 1.2;
     canvas.style.top = "-" + parseInt(getComputedStyle(dom)["height"]) * 0.1 + "px";
     canvas.style.left = "-" + parseInt(getComputedStyle(dom)["width"]) * 0.1 + "px";
     initPoints();
-  });
-  dom.addEventListener("click", function () {
+  }
+
+  window.addEventListener("resize", resizeE);
+
+  function clickE() {
     var target = (0, _utils.copy)(colors[++ci % colors.length]);
     (0, _utils.move)(color, target, duration);
-  });
+  }
+
+  dom.addEventListener("click", clickE);
   return {
     canvas: canvas,
     stop: function stop() {
       cancelAnimationFrame(id);
+      dom.removeEventListener("mousemove", moveE);
+      dom.removeEventListener("mouseleave", leaveE);
+      window.removeEventListener("resize", resizeE);
+      dom.removeEventListener("click", clickE);
     }
   };
 };
@@ -926,30 +954,46 @@ var rain = function rain(_ref) {
 
   initPoints();
   animate();
-  dom.addEventListener("mousemove", function (e) {
+
+  function moveE(e) {
     p.x = e.movementX / 50;
     p.y = e.movementY / 50;
-  });
-  dom.addEventListener("mouseleave", function () {
+  }
+
+  dom.addEventListener("mousemove", moveE);
+
+  function leaveE(e) {
     var _ref4 = [0, 0];
     p.x = _ref4[0];
     p.y = _ref4[1];
-  });
-  window.addEventListener("resize", function () {
+  }
+
+  dom.addEventListener("mouseleave", leaveE);
+
+  function resizeE() {
     canvas.height = parseInt(getComputedStyle(dom)["height"]) * 1.2;
     canvas.width = parseInt(getComputedStyle(dom)["width"]) * 1.2;
     canvas.style.top = "-" + parseInt(getComputedStyle(dom)["height"]) * 0.1 + "px";
     canvas.style.left = "-" + parseInt(getComputedStyle(dom)["width"]) * 0.1 + "px";
     initPoints();
-  });
-  dom.addEventListener("click", function () {
+  }
+
+  window.addEventListener("resize", resizeE);
+
+  function clickE() {
     var target = (0, _utils.copy)(colors[++ci % colors.length]);
     (0, _utils.move)(color, target, duration);
-  });
+  }
+
+  dom.addEventListener("click", clickE);
   return {
     canvas: canvas,
     stop: function stop() {
       cancelAnimationFrame(id);
+      dom.removeEventListener("mousemove", moveE);
+      dom.removeEventListener("mouseleave", leaveE);
+      window.removeEventListener("resize", resizeE);
+      dom.removeEventListener("click", clickE);
     }
   };
 };
@@ -990,10 +1034,40 @@ var _rain = require("./rain");
 
 var _index = require("./index");
 
-(0, _index.wind)({
-  dom: document.querySelector(".main")
-});
-},{"./index":"index.js"}],"../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var _utils = require("./utils");
+
+var div2 = document.createElement('div');
+div2.style.width = '100px';
+div2.style.height = '100px';
+div2.style.backgroundColor = 'green';
+document.body.appendChild(div2);
+var div = document.createElement('div');
+div.style.width = '100px';
+div.style.height = '100px';
+div.style.backgroundColor = 'red';
+document.body.appendChild(div);
+window.addEventListener('click', function () {
+  (0, _utils.move)({
+    x: 0
+  }, {
+    x: 100
+  }, 5000, function (e) {
+    div.style.transform = "translateX(".concat(e.x, "px)");
+  });
+  (0, _utils.move)({
+    x: 0
+  }, {
+    x: 100
+  }, 5000, function (e) {
+    div2.style.transform = "translateX(".concat(e.x, "px)");
+  }, function (pro) {
+    return pro * 2;
+  });
+}); // wind({
+//   dom: document.querySelector(".main"),
+//   duration: 2000
+// });
+},{"./index":"index.js","./utils":"utils.js"}],"../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1020,7 +1094,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60460" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49730" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

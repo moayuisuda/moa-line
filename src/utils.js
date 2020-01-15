@@ -7,34 +7,39 @@ const copy = target => {
   return re;
 };
 
-let isChangeing = false;
-const move = (origin, target, duration) => {
-  if (isChangeing) {
-    return;
+const move = (
+  origin,
+  target,
+  duration,
+  after,
+  fn = pro => {
+    return Math.sqrt(pro, 2);
   }
-  isChangeing = true;
-  let st, from;
-  st = from = performance.now();
+) => {
+  if (fn(1) != 1) throw '[moaline-move] The fn must satisfy "fn (1) == 1"'; // 当参数为1时，对应的值也一定要为1
+
+  let st, sp;
+  st = performance.now(); // 保存开始时间
+  sp = copy(origin); // 保存起点
   let d = {}; // 源与目标之间每一项的距离
   for (let i in origin) {
     d[i] = target[i] - origin[i];
   }
 
   let frame = t => {
-    let dt = t - st, // 这次与上次间隔
-      per = dt / duration, // 上一次到这一次的时间占总时间比
-      pro = (t - from) / duration; // 当前进程
+    let pro = (t - st) / duration; // 当前进程
     if (pro >= 1) {
-      isChangeing = false;
       return;
     }
-    for (let i in origin) {
-      origin[i] += d[i] * per; // 每一项加上时间比(per)*总距离(d[i])
-    }
-    st = t; // 起始时间变为当前时间
 
+    for (let i in origin) {
+      origin[i] = sp[i] + fn(pro) * d[i]; // fn(pro)得出当前时间对应的缓动函数的距离百分比，再乘以总距离
+    }
+
+    if(after) after(copy(origin), pro);
     requestAnimationFrame(frame);
   };
+
   frame(st);
 };
 
